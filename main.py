@@ -32,9 +32,11 @@ dados['doenca'] = 1 * (heart_disease.data.targets > 0)
 # plt.ylabel('Idade')
 # plt.show()
 
-fig = px.histogram(dados, x='age', nbins=30)
-fig.update_layout(
-    title='Distribuição de Idade',
-    xaxis_title='Idade',
-    yaxis_title='Frequência')
-fig.show()
+# fig = px.histogram(dados, x='age', nbins=30)
+# fig.update_layout(
+#     title='Distribuição de Idade',
+#     xaxis_title='Idade',
+#     yaxis_title='Frequência')
+# fig.show()
+
+
