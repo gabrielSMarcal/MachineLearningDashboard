@@ -1,15 +1,15 @@
-from ucimlrepo import fetch_ucirepo
-import plotly.express as px
-from dash import Dash, dcc, html
+from dash import Dash, html
 
-heart_disease = fetch_ucirepo(id=45)
-dados = heart_disease.data.features
-# print(dados.head())
+from utils import div_histograma, div_boxplot
 
-figura_histograma = px.histogram(dados, x='age', nbins=30, title='Distribuição da Idade')
 app = Dash(__name__)
 app.layout = html.Div([
     html.H1('Análise de dados do UCI Repository Heart Disease'),
-    dcc.Graph(figure=figura_histograma)])
+    div_histograma,
+    div_boxplot
+])
+
+# Exemplo de como adicionar mais componentes dinamicamente
+# app.layout.children.append(div_boxplot)
 
 app.run(debug=True)
