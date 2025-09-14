@@ -1,6 +1,6 @@
 from ucimlrepo import fetch_ucirepo
 import plotly.express as px
-from dash import Dash, dcc, html
+from dash import dcc, html
 
 heart_disease = fetch_ucirepo(id=45)
 dados = heart_disease.data.features
