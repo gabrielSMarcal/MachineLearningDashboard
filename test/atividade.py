@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import plotly.express as px
 import seaborn as sns
 
-from main import dados
+from teste_de_dados import dados
 
 # Atividade 1: Visualização de Dados
 # fig = px.box(dados, x='doenca', y='chol', color='doenca',
