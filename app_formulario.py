@@ -167,4 +167,7 @@ def prever_doenca(n_clicks, idade, sexo, tipo_dor, trestbps, chol, fbs, restecg,
     alerta = dbc.Alert(mensagem, color=cor_do_alerta, className='d-flex justify-content-center text-center mb-5')
     return alerta
 
+# Método fillna está ficando obsoleto, silenciando Warning
+pd.set_option('future.no_silent_downcasting', True) 
+
 app.run(debug=True)
