@@ -25,5 +25,3 @@ def calcula_meses(n_clicks, idade):
     if n_clicks == 0 or idade is None:
         return ''
     return idade * 12
-
-app.run(debug=True)

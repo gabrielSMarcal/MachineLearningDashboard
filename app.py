@@ -1,5 +1,6 @@
 from dash import Dash, dcc, html
 from dash.dependencies import Input, Output
+import pages
 import dash_bootstrap_components as dbc
 
 app = Dash(__name__, external_stylesheets=['assets/main.css', dbc.themes.FLATLY])
@@ -29,7 +30,7 @@ app.layout = html.Div([
 
 def mostrar_pagina(pathname):
     if pathname== '/graficos':
-        return html.P('Página de Gráficos')
+        return pages.graficos.layout_grafico
     elif pathname == '/formulario':
         return html.P('Página de Formulário')
     return html.P('Página Inicial')
