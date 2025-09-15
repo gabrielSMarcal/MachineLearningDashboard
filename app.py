@@ -1,15 +1,27 @@
-from dash import Dash, html
+from dash import Dash, dcc, html
+from dash.dependencies import Input, Output
 
-from utils import div_histograma, div_boxplot
+app = Dash(__name__, external_stylesheets=['assets/main.css'])
 
-app = Dash(__name__)
 app.layout = html.Div([
-    html.H1('Análise de dados do UCI Repository Heart Disease'),
-    div_histograma,
-    div_boxplot
+    dcc.Location(id='url', refresh=False),
+    html.Nav([
+        dcc.Link('Gráficos', href='/graficos'),
+        dcc.Link('Formulário', href='/formulario')
+    ]),
+    html.Div(id='conteudo')
 ])
 
-# Exemplo de como adicionar mais componentes dinamicamente
-# app.layout.children.append(div_boxplot)
+@app.callback(
+    Output('conteudo', 'children'),
+    [Input('url', 'pathname')]
+)
+
+def mostrar_pagina(pathname):
+    if pathname== '/graficos':
+        return html.P('Página de Gráficos')
+    elif pathname == '/formulario':
+        return html.P('Página de Formulário')
+    return html.P('Página Inicial')
 
 app.run(debug=True)
