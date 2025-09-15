@@ -10,10 +10,11 @@ medianas = joblib.load('medianas.pkl')
 
 app = Dash(
     __name__,
-    external_stylesheets=[dbc.themes.BOOTSTRAP]
+    external_stylesheets=[dbc.themes.FLATLY]
 )
 
 formulario = dbc.Container([
+    html.P('Preencha os campos abaixo com suas informações e clique em "Prever" para rodar o modelo:', className='text-center mb-5'),
         dbc.Row([
             dbc.Col([
                 dbc.CardGroup([
@@ -79,7 +80,7 @@ formulario = dbc.Container([
                 ], className='mb-3'),
                 dbc.CardGroup([
                     dbc.Label('Depressão do segmento ST induzida por exercício'),
-                    dbc.Input(id='oldpeak', type='number', placeholder='Digite o valor de oldpeak'),
+                    dbc.Input(id='oldpeak', type='number', placeholder='Digite o valor da depressão do segmento ST'),
                 ], className='mb-3'),
                 dbc.CardGroup([
                     dbc.Label('Inclinação do segmento ST'),
@@ -108,15 +109,13 @@ formulario = dbc.Container([
                         {'label': 'Defeito reversível', 'value': '7'},
                     ]),
                 ], className='mb-3'),
-                dbc.CardGroup([
-                    dbc.Button('Prever', id='prever', color='primary', n_clicks=0)
-                ], className='mb-3'),
+                dbc.Button('Prever', id='prever', color='success', n_clicks=0, className='mt-4 mb-4')
             ])
         ])
-    ])
+    ], fluid=True)
 
 app.layout = html.Div([
-    html.H1('Previsão de doença cardíaca'),
+    html.H1('Previsão de doença cardíaca', className='text-center mt-5'),
     formulario,
     html.Div(id='previsao')
 ])
@@ -149,7 +148,7 @@ def prever_doenca(n_clicks, idade, sexo, tipo_dor, trestbps, chol, fbs, restecg,
     )
 
     entradas_usuario = entradas_usuario.fillna(medianas)
-
+    
     entradas_usuario['oldpeak'] = entradas_usuario['oldpeak'].astype(np.float64)
 
     for col in entradas_usuario.columns:
@@ -159,8 +158,13 @@ def prever_doenca(n_clicks, idade, sexo, tipo_dor, trestbps, chol, fbs, restecg,
     previsao = modelo.predict(entradas_usuario)[0]
     
     if previsao == 1:
-        return html.H2('Você tem alta probabilidade de ter uma doença cardíaca.', style={'color': 'red'})
-    
-    return html.H2('Você tem baixa probabilidade de ter uma doença cardíaca.', style={'color': 'green'})
+        mensagem = 'O modelo previu que você tem doença cardíaca.'
+        cor_do_alerta = 'danger'
+    else:
+        mensagem = 'O modelo previu que você não tem doença cardíaca.'
+        cor_do_alerta = 'light'
+
+    alerta = dbc.Alert(mensagem, color=cor_do_alerta, className='d-flex justify-content-center text-center mb-5')
+    return alerta
 
 app.run(debug=True)
