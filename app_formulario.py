@@ -1,21 +1,24 @@
 from dash import Dash, dcc, html
 from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
+import joblib
+import numpy as np
+import pandas as pd
 
+modelo = joblib.load('modelo_xgboost.pkl')
+medianas = joblib.load('medianas.pkl')
 
 app = Dash(
     __name__,
     external_stylesheets=[dbc.themes.BOOTSTRAP]
 )
 
-app.layout = html.Div([
-    html.H1('Previsão de doença cardíaca'),
-    dbc.Container([
+formulario = dbc.Container([
         dbc.Row([
             dbc.Col([
                 dbc.CardGroup([
                     dbc.Label('Idade'),
-                    dbc.Input(id='input-idade', type='number', placeholder='Digite sua idade'),
+                    dbc.Input(id='idade', type='number', placeholder='Digite sua idade'),
                 ], className='mb-3'),
                 dbc.CardGroup([
                     dbc.Label('Sexo biológico'),
@@ -106,13 +109,58 @@ app.layout = html.Div([
                     ]),
                 ], className='mb-3'),
                 dbc.CardGroup([
-                    dbc.Button('Prever', id='botao-prever', color='primary')
+                    dbc.Button('Prever', id='prever', color='primary', n_clicks=0)
                 ], className='mb-3'),
+            ])
         ])
     ])
-    
-        
-    ])
+
+app.layout = html.Div([
+    html.H1('Previsão de doença cardíaca'),
+    formulario,
+    html.Div(id='previsao')
 ])
+
+@app.callback(
+    Output('previsao', 'children'),
+    [Input('prever', 'n_clicks')],
+    [State('idade', 'value'),
+        State('sexo', 'value'),
+        State('tipo-dor', 'value'),
+        State('trestbps', 'value'),
+        State('chol', 'value'),
+        State('fbs', 'value'),
+        State('restecg', 'value'),
+        State('thalach', 'value'),
+        State('exang', 'value'),
+        State('oldpeak', 'value'),
+        State('slope', 'value'),
+        State('ca', 'value'),
+        State('thal', 'value')]
+)
+
+def prever_doenca(n_clicks, idade, sexo, tipo_dor, trestbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca, thal):
+    if n_clicks == 0:
+        return ''
+    
+    entradas_usuario = pd.DataFrame(
+        data = [[idade, sexo, tipo_dor, trestbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca, thal]],
+        columns = ['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach', 'exang', 'oldpeak', 'slope', 'ca', 'thal']
+    )
+
+    entradas_usuario = entradas_usuario.fillna(medianas)
+
+    entradas_usuario['oldpeak'] = entradas_usuario['oldpeak'].astype(np.float64)
+
+    for col in entradas_usuario.columns:
+        if col != 'oldpeak':
+            entradas_usuario[col] = entradas_usuario[col].astype(np.int64)
+            
+    previsao = modelo.predict(entradas_usuario)[0]
+    
+    if previsao == 1:
+        return html.H2('Você tem alta probabilidade de ter uma doença cardíaca.', style={'color': 'red'})
+    
+    return html.H2('Você tem baixa probabilidade de ter uma doença cardíaca.', style={'color': 'green'})
 
 app.run(debug=True)

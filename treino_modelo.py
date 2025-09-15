@@ -28,3 +28,7 @@ acuracia = accuracy_score(y_teste, predicoes) * 100
 # print(f'Acurácia: {acuracia:.2f}%') # Acurácia: 81.97%
 
 joblib.dump(modelo, 'modelo_xgboost.pkl')
+
+medianas = X.median()
+
+joblib.dump(medianas, 'medianas.pkl')
